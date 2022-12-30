@@ -9,10 +9,10 @@ pub struct MinimalPublicUserDTO {
 impl MinimalPublicUserDTO {
     /*pub fn from_user(user: &User) -> MinimalPublicUserDTO {
         MinimalPublicUserDTO {
-            avatar: user.avatar.clone(),
+            Avatar: user.Avatar.clone(),
             discriminator: user.discriminator.clone(),
             id: user.id.clone(),
-            public_flags: user.public_flags,
+            PublicFlags: user.PublicFlags,
             username: user.name.clone(),
         }
     }*/

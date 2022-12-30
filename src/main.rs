@@ -3,11 +3,19 @@ use actix_web::rt::System;
 use actix_web::{App, HttpServer, Scope};
 use fosscord_server_rs::utils::database::migrator::Migrator;
 use log::LevelFilter;
-use sea_orm::{ConnectOptions, Database};
+use sea_orm::{ActiveModelTrait, ConnectOptions, Database};
 use sea_orm_migration::MigratorTrait;
 use std::env;
+use std::io::{Error, ErrorKind};
+use std::sync::RwLock;
+use once_cell::sync::OnceCell;
 use tokio::io::AsyncBufReadExt;
 use tokio::runtime::Builder;
+use fosscord_server_rs::shared::{CONFIGURATION, SNOWFLAKE_GENERATOR};
+use fosscord_server_rs::utils::entities::user;
+use fosscord_server_rs::utils::entities::user::ActiveModel;
+use fosscord_server_rs::utils::types::snowflake::SnowflakeGenerator;
+use fosscord_server_rs::utils::config::Configuration;
 
 fn main() -> std::io::Result<()> {
     env::set_var("RUST_LOG", "debug");
@@ -38,9 +46,18 @@ fn main() -> std::io::Result<()> {
 }
 
 async fn async_bootstrap(worker_threads: usize) -> std::io::Result<()> {
-    let host = env::var("FOSSCORD_HOST").unwrap_or_else(|_| "127.0.0.1".to_string());
-    let port = env::var("FOSSCORD_PORT").unwrap_or_else(|_| "8080".to_string());
-    let address = format!("{}:{}", host, port);
+    let worker_id = env::var("WORKER_ID")
+        .unwrap_or_else(|_| "0".to_string())
+        .parse::<u64>()
+        .unwrap();
+    let process_id = env::var("PROCESS_ID")
+        .unwrap_or_else(|_| "0".to_string())
+        .parse::<u64>()
+        .unwrap();
+    let generator = SnowflakeGenerator::new(worker_id, process_id);
+
+    SNOWFLAKE_GENERATOR.set(generator).unwrap();
+    CONFIGURATION.set(Configuration::new()).unwrap();
 
     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
     let mut options = ConnectOptions::new(database_url);
@@ -53,6 +70,10 @@ async fn async_bootstrap(worker_threads: usize) -> std::io::Result<()> {
     Migrator::up(&database, None)
         .await
         .expect("Failed to run migrations");
+
+    let host = env::var("FOSSCORD_HOST").unwrap_or_else(|_| "127.0.0.1".to_string());
+    let port = env::var("FOSSCORD_PORT").unwrap_or_else(|_| "8080".to_string());
+    let address = format!("{}:{}", host, port);
 
     log::info!("Starting server on {}...", &address);
 

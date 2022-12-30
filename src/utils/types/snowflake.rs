@@ -44,6 +44,10 @@ impl SnowflakeGenerator {
             snowflake: snowflake.to_string(),
         }
     }
+
+    pub fn generate_snowflake(&mut self) -> Snowflake {
+        self.generate().snowflake
+    }
 }
 
 impl GeneratedSnowflake {
