@@ -1,4 +1,3 @@
-use std::borrow::Borrow;
 use regex::Regex;
 
 pub const DOUBLE_WHITE_SPACE: Regex = Regex::new(r"\s\s+").unwrap();

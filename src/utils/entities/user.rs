@@ -1,10 +1,11 @@
 use std::error::Error;
 use std::sync::Arc;
-use crate::utils::entities::application::Relation;
-use crate::utils::types::snowflake::Snowflake;
+use rand::Rng;
+use crate::utils::other::snowflake::Snowflake;
 use sea_orm::entity::prelude::*;
 use sea_orm::QuerySelect;
-use sea_orm::sea_query::ColumnSpec::Default;
+use std::default::Default;
+use serde::{Deserialize, Serialize};
 use crate::shared::{CONFIGURATION, SNOWFLAKE_GENERATOR};
 use crate::utils::config::Configuration;
 use crate::utils::other::string;
@@ -99,6 +100,28 @@ pub struct Model {
     pub public_flags: i32,
     #[sea_orm(column_type = "BigInteger", default_value = "String::from(\"0\")")]
     pub rights: String,
+    pub data: Data,
+    //A Vec<String> stored as a Json array
+    pub fingerprints: Json,
+    pub extended_settings: Json,
+}
+
+#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
+pub enum Relation {
+    #[sea_orm(has_many = "super::session::Entity")]
+    Session,
+    #[sea_orm(has_many = "super::relationship::Entity")]
+    Relationship,
+    #[sea_orm(has_many = "super::connected_account::Entity")]
+    ConnectedAccount,
+    #[sea_orm(has_one = "super::user_settings::Entity")]
+    Settings,
+}
+
+#[derive(Serialize, Deserialize, FromJsonQueryResult)]
+pub struct Data {
+    pub valid_tokens_since: DateTime,
+    pub hash: Option<String>,
 }
 
 impl Model {
@@ -110,17 +133,6 @@ impl Model {
         }
 
         self.discriminator = format!("{:0>4}", parsed_discriminator);
-        Ok(())
-    }
-
-    pub async fn save(mut self, database: Arc<DatabaseConnection>) -> Result<(), Box<dyn Error>> {
-        if self.settings.is_none() {
-            self.settings = Some(UserSettings::new())
-        }
-
-        self.settings.id = self.id;
-        ActiveModel::save(self.into(), database.as_ref()).await.map_err(|e| e.into())?;
-
         Ok(())
     }
 }
@@ -146,7 +158,7 @@ pub async fn generate_discriminator(username: String, database: Arc<DatabaseConn
                 return Err("Failed to generate a unique discriminator".into());
             }
 
-            let discriminator = format!("{:0>4}", rand::thread_rng().gen_range(0..10000));
+            let discriminator = format!("{:0>4}", rand::thread_rng().gen_range(0..=9999));
             let exists = Entity::find().filter(Column::Username.eq(username.clone())).filter(Column::Discriminator.eq(discriminator.clone())).select_only().column(Column::Id).one(database.as_ref()).await?;
 
             if exists.is_none() {
@@ -162,11 +174,11 @@ pub async fn register(schema: RegisterSchema, locale: String, database: Arc<Data
     let snowflake = SNOWFLAKE_GENERATOR.get().unwrap().generate_snowflake();
 
     let data = Data {
-        hash: schema.password,
-        valid_token_since: chrono::Utc::now().into()
+        hash: Some(schema.password),
+        valid_tokens_since: chrono::Utc::now().into()
     };
-    let settings = UserSettings {
-        locale,
+    let settings = super::user_settings::Model {
+        locale: Some(locale),
         ..Default::default()
     };
     let user = Model {
@@ -186,7 +198,8 @@ pub async fn register(schema: RegisterSchema, locale: String, database: Arc<Data
 
         if configuration.guild.auto_join.enabled {
             for guild in configuration.guild.auto_join.guilds {
-                Member::add_to_guild(snowflake.clone(), guild, database.clone()).await;
+                //TODO: Add guild join
+                //Member::add_to_guild(snowflake.clone(), guild, database.clone()).await;
             }
         }
     });
@@ -195,6 +208,30 @@ pub async fn register(schema: RegisterSchema, locale: String, database: Arc<Data
 }
 
 impl ActiveModelBehavior for ActiveModel {}
+
+impl Related<super::session::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Session.def()
+    }
+}
+
+impl Related<super::relationship::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Relationship.def()
+    }
+}
+
+impl Related<super::connected_account::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::ConnectedAccount.def()
+    }
+}
+
+impl Related<super::user_settings::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::UserSettings.def()
+    }
+}
 
 impl From<Model> for PublicUser {
     fn from(value: Model) -> Self {

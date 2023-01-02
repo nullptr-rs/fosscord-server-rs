@@ -1,4 +1,4 @@
-use crate::utils::types::snowflake::Snowflake;
+use crate::utils::other::snowflake::Snowflake;
 use sea_orm::entity::prelude::*;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]

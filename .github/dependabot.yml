@@ -1,0 +1,28 @@
+version: 2
+
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily"
+      time: "09:00"
+      timezone: "Europe/Paris"
+    assignees:
+      - "nullptr-rs"
+    commit-message:
+      prefix: "[CI]"
+      include: scope
+    target-branch: "develop"
+
+  - package-ecosystem: "cargo"
+    directory: "/"
+    schedule:
+      interval: daily
+      time: "09:00"
+      timezone: "Europe/Paris"
+    assignees:
+      - "nullptr-rs"
+    commit-message:
+      prefix: "[Cargo]"
+      include: scope
+    target-branch: "develop"

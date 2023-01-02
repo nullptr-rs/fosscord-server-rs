@@ -5,3 +5,4 @@ pub mod entities;
 pub mod types;
 pub mod schemas;
 pub mod other;
+pub mod interfaces;
