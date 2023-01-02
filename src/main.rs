@@ -1,31 +1,32 @@
 extern crate core;
 
-use core::panicking;
 use actix_web::middleware::{Compress, Logger};
 use actix_web::rt::System;
 use actix_web::{App, HttpServer, Scope};
+use core::panicking;
+use fosscord_server_rs::shared::{CONFIGURATION, SNOWFLAKE_GENERATOR};
+use fosscord_server_rs::stats;
+use fosscord_server_rs::utils::config::Configuration;
 use fosscord_server_rs::utils::database::migrator::Migrator;
+use fosscord_server_rs::utils::entities::user;
+use fosscord_server_rs::utils::entities::user::ActiveModel;
+use fosscord_server_rs::utils::other::snowflake::SnowflakeGenerator;
 use log::LevelFilter;
+use once_cell::sync::OnceCell;
 use sea_orm::{ActiveModelTrait, ConnectOptions, Database};
 use sea_orm_migration::MigratorTrait;
 use std::env;
 use std::io::{Error, ErrorKind};
 use std::sync::RwLock;
-use once_cell::sync::OnceCell;
 use tokio::io::AsyncBufReadExt;
 use tokio::runtime::Builder;
-use fosscord_server_rs::shared::{CONFIGURATION, SNOWFLAKE_GENERATOR};
-use fosscord_server_rs::stats;
-use fosscord_server_rs::utils::entities::user;
-use fosscord_server_rs::utils::entities::user::ActiveModel;
-use fosscord_server_rs::utils::other::snowflake::SnowflakeGenerator;
-use fosscord_server_rs::utils::config::Configuration;
 
 fn main() -> std::io::Result<()> {
     env::set_var("RUST_LOG", "debug");
     env_logger::init();
 
-    #[cfg(target_os = "windows")] {
+    #[cfg(target_os = "windows")]
+    {
         ansi_term::enable_ansi_support().expect("Failed to enable ansi support");
     }
 

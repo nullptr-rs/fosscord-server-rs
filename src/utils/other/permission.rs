@@ -35,5 +35,5 @@ pub enum Permissions {
     ManageThreads = 34,
     UsePublicThreads = 35,
     UsePrivateThreads = 36,
-    UseExternalStickers = 37
+    UseExternalStickers = 37,
 }

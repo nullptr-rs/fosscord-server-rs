@@ -1,10 +1,10 @@
-use std::collections::HashMap;
-use actix_web_actors::ws;
-use flate2::read::ZlibDecoder;
-use tokio::time::Instant;
 use crate::utils::other::intents::Intents;
 use crate::utils::other::permission::Permissions;
 use crate::utils::other::snowflake::Snowflake;
+use actix_web_actors::ws;
+use flate2::read::ZlibDecoder;
+use std::collections::HashMap;
+use tokio::time::Instant;
 
 pub struct WebSocket {
     pub version: i32,
@@ -42,6 +42,4 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for WebSocket {
     }
 }
 
-pub fn set_heartbeat(socket: &mut WebSocket) {
-
-}
+pub fn set_heartbeat(socket: &mut WebSocket) {}

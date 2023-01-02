@@ -1,6 +1,6 @@
+use crate::utils::other::snowflake::Snowflake;
 use chrono::{DateTime, NaiveDateTime, Utc};
 use serde::{Deserialize, Serialize};
-use crate::utils::other::snowflake::Snowflake;
 
 #[derive(Serialize, Deserialize)]
 pub struct Activity {
@@ -22,7 +22,7 @@ pub struct Activity {
     pub id: Option<String>,
     pub sync_id: Option<String>,
     pub metadata: Option<Metadata>,
-    pub session_id: Option<String>
+    pub session_id: Option<String>,
 }
 
 pub enum Type {
@@ -30,36 +30,36 @@ pub enum Type {
     Streaming = 1,
     Listening = 2,
     Custom = 4,
-    Competing = 5
+    Competing = 5,
 }
 
 pub struct Timestamps {
     pub start: NaiveDateTime,
-    pub end: NaiveDateTime
+    pub end: NaiveDateTime,
 }
 
 pub struct Emoji {
     pub name: String,
     pub id: Option<String>,
-    pub animated: bool
+    pub animated: bool,
 }
 
 pub struct Party {
     pub id: String,
-    pub size: [i32; 2]
+    pub size: [i32; 2],
 }
 
 pub struct Assets {
     pub large_image: Snowflake,
     pub large_text: String,
     pub small_image: Snowflake,
-    pub small_text: String
+    pub small_text: String,
 }
 
 pub struct Secrets {
     pub join: String,
     pub spectate: String,
-    pub _match: String
+    pub _match: String,
 }
 
 pub struct Metadata {

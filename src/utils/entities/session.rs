@@ -1,7 +1,7 @@
-use sea_orm::{Related, RelationDef};
+use crate::utils::interfaces::status::Status;
 use crate::utils::other::snowflake::Snowflake;
 use sea_orm::entity::prelude::*;
-use crate::utils::interfaces::status::Status;
+use sea_orm::{Related, RelationDef};
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(table_name = "sessions")]

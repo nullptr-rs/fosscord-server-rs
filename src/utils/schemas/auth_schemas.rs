@@ -8,5 +8,5 @@ pub struct RegisterSchema {
     pub date_of_birth: String,
     pub gift_code_sku_id: Option<String>,
     pub captcha_key: Option<String>,
-    pub promotional_email_opt_in: Option<bool>
+    pub promotional_email_opt_in: Option<bool>,
 }

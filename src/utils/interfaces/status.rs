@@ -1,5 +1,5 @@
-use sea_orm::EnumIter;
 use sea_orm::DeriveActiveEnum;
+use sea_orm::EnumIter;
 
 #[derive(EnumIter, DeriveActiveEnum)]
 #[sea_orm(rs_type = "String", db_type = "String(Some(1))")]
@@ -13,11 +13,11 @@ pub enum Status {
     #[sea_orm(string_value = "offline")]
     Offline,
     #[sea_orm(string_value = "invisible")]
-    Invisible
+    Invisible,
 }
 
 pub struct ClientStatus {
     pub desktop: Option<String>,
     pub mobile: Option<String>,
-    pub web: Option<String>
+    pub web: Option<String>,
 }

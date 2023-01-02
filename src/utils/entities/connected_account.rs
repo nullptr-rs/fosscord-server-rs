@@ -1,10 +1,10 @@
-use sea_orm::prelude::*;
 use crate::utils::other::snowflake::Snowflake;
+use sea_orm::prelude::*;
 
 pub struct PublicConnectedAccount {
     pub name: String,
     pub _type: String,
-    pub verified: bool
+    pub verified: bool,
 }
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
@@ -21,15 +21,15 @@ pub struct Model {
     pub show_activity: bool,
     pub _type: String,
     pub verified: bool,
-    pub visibility: i32
+    pub visibility: i32,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
     #[sea_orm(
-    belongs_to = "super::user::Entity",
-    from = "Column::UserId",
-    to = "super::user::Column::Id"
+        belongs_to = "super::user::Entity",
+        from = "Column::UserId",
+        to = "super::user::Column::Id"
     )]
     User,
 }
@@ -47,7 +47,7 @@ impl From<Model> for PublicConnectedAccount {
         Self {
             name: value.name,
             _type: value._type,
-            verified: value.verified
+            verified: value.verified,
         }
     }
 }

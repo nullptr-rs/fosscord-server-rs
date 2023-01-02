@@ -1,5 +1,5 @@
-use sea_orm::prelude::*;
 use crate::utils::other::snowflake::Snowflake;
+use sea_orm::prelude::*;
 
 #[derive(EnumIter, DeriveActiveEnum)]
 #[sea_orm(rs_type = "i32", db_type = "Integer")]
@@ -11,7 +11,7 @@ pub enum RelationshipType {
     #[sea_orm(num_value = 2)]
     Blocked = 2,
     #[sea_orm(num_value = 1)]
-    Friends = 1
+    Friends = 1,
 }
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
@@ -25,15 +25,15 @@ pub struct Model {
     pub to_id: Snowflake,
     #[sea_orm(nullable)]
     pub nickname: Option<String>,
-    pub _type: RelationshipType
+    pub _type: RelationshipType,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
     #[sea_orm(
-    belongs_to = "super::user::Entity",
-    from = "Column::FromId",
-    to = "super::user::Column::Id"
+        belongs_to = "super::user::Entity",
+        from = "Column::FromId",
+        to = "super::user::Column::Id"
     )]
     User,
 }

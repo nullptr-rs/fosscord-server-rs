@@ -1,7 +1,7 @@
-use sea_orm::prelude::*;
-use serde::{Deserialize, Serialize};
 use crate::utils::interfaces::status::Status;
 use crate::utils::other::snowflake::Snowflake;
+use sea_orm::prelude::*;
+use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, Default, DeriveEntityModel)]
 #[sea_orm(table_name = "user_settings")]
@@ -99,9 +99,9 @@ pub struct FriendSourceFlags {
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
     #[sea_orm(
-    belongs_to = "super::user::Entity",
-    from = "Column::Id",
-    to = "super::user::Column::Id"
+        belongs_to = "super::user::Entity",
+        from = "Column::Id",
+        to = "super::user::Column::Id"
     )]
     User,
 }

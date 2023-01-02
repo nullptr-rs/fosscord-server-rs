@@ -24,7 +24,7 @@ enum OpCodes {
     StreamWatch = 20,
     StreamPing = 21,
     StreamSetPaused = 22,
-    RequestApplicationCommands = 24
+    RequestApplicationCommands = 24,
 }
 
 pub enum CloseCodes {
@@ -42,12 +42,12 @@ pub enum CloseCodes {
     ShardingRequired,
     InvalidApiVersion,
     InvalidIntent,
-    DisallowedIntent
+    DisallowedIntent,
 }
 
 pub struct Payload {
     op: OpCodes,
     d: Option<Value>,
     s: Option<i32>,
-    t: Option<String>
+    t: Option<String>,
 }

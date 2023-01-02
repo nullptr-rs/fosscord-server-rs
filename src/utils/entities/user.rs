@@ -1,15 +1,15 @@
-use std::error::Error;
-use std::sync::Arc;
-use rand::Rng;
-use crate::utils::other::snowflake::Snowflake;
-use sea_orm::entity::prelude::*;
-use sea_orm::QuerySelect;
-use std::default::Default;
-use serde::{Deserialize, Serialize};
 use crate::shared::{CONFIGURATION, SNOWFLAKE_GENERATOR};
 use crate::utils::config::Configuration;
+use crate::utils::other::snowflake::Snowflake;
 use crate::utils::other::string;
 use crate::utils::schemas::auth_schemas::RegisterSchema;
+use rand::Rng;
+use sea_orm::entity::prelude::*;
+use sea_orm::QuerySelect;
+use serde::{Deserialize, Serialize};
+use std::default::Default;
+use std::error::Error;
+use std::sync::Arc;
 
 pub const DISCORD_EMPLOYEE_FLAG: u64 = 1 << 0;
 pub const PARTNER_SERVER_OWNER_FLAG: u64 = 1 << 1;
@@ -42,7 +42,7 @@ pub struct PublicUser {
     pub banner: Option<String>,
     pub bio: Option<String>,
     pub bot: bool,
-    pub premium_since: Option<DateTime>
+    pub premium_since: Option<DateTime>,
 }
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
@@ -125,7 +125,7 @@ pub struct Data {
 }
 
 impl Model {
-    pub fn set_discriminator(&mut self, discriminator: String) -> Result<(), Box<dyn Error>>{
+    pub fn set_discriminator(&mut self, discriminator: String) -> Result<(), Box<dyn Error>> {
         let parsed_discriminator = discriminator.parse::<u64>()?;
 
         if parsed_discriminator >= 10000 {
@@ -137,12 +137,22 @@ impl Model {
     }
 }
 
-pub async fn generate_discriminator(username: String, database: Arc<DatabaseConnection>) -> Result<String, Box<dyn Error>> {
+pub async fn generate_discriminator(
+    username: String,
+    database: Arc<DatabaseConnection>,
+) -> Result<String, Box<dyn Error>> {
     let configuration: &Configuration = CONFIGURATION.get().unwrap();
 
     if configuration.register.incrementing_discriminators {
-        let users = Entity::find().filter(Column::Username.eq(username.clone())).all(database.as_ref()).await?;
-        let highest_discriminator = users.iter().map(|user| user.discriminator.parse::<u64>().unwrap()).max().unwrap_or(0);
+        let users = Entity::find()
+            .filter(Column::Username.eq(username.clone()))
+            .all(database.as_ref())
+            .await?;
+        let highest_discriminator = users
+            .iter()
+            .map(|user| user.discriminator.parse::<u64>().unwrap())
+            .max()
+            .unwrap_or(0);
 
         let discriminator = highest_discriminator + 1;
         if discriminator >= 10000 {
@@ -159,7 +169,13 @@ pub async fn generate_discriminator(username: String, database: Arc<DatabaseConn
             }
 
             let discriminator = format!("{:0>4}", rand::thread_rng().gen_range(0..=9999));
-            let exists = Entity::find().filter(Column::Username.eq(username.clone())).filter(Column::Discriminator.eq(discriminator.clone())).select_only().column(Column::Id).one(database.as_ref()).await?;
+            let exists = Entity::find()
+                .filter(Column::Username.eq(username.clone()))
+                .filter(Column::Discriminator.eq(discriminator.clone()))
+                .select_only()
+                .column(Column::Id)
+                .one(database.as_ref())
+                .await?;
 
             if exists.is_none() {
                 return Ok(discriminator);
@@ -168,14 +184,18 @@ pub async fn generate_discriminator(username: String, database: Arc<DatabaseConn
     }
 }
 
-pub async fn register(schema: RegisterSchema, locale: String, database: Arc<DatabaseConnection>) -> Result<PublicUser, Box<dyn Error>> {
+pub async fn register(
+    schema: RegisterSchema,
+    locale: String,
+    database: Arc<DatabaseConnection>,
+) -> Result<PublicUser, Box<dyn Error>> {
     let username = string::trim_regex(&schema.username, string::SPECIAL_CHAR);
     let discriminator = generate_discriminator(username.clone(), database.clone()).await?;
     let snowflake = SNOWFLAKE_GENERATOR.get().unwrap().generate_snowflake();
 
     let data = Data {
         hash: Some(schema.password),
-        valid_tokens_since: chrono::Utc::now().into()
+        valid_tokens_since: chrono::Utc::now().into(),
     };
     let settings = super::user_settings::Model {
         locale: Some(locale),
@@ -245,7 +265,7 @@ impl From<Model> for PublicUser {
             banner: value.banner,
             bio: value.bio,
             bot: value.bot,
-            premium_since: value.premium_since
+            premium_since: value.premium_since,
         }
     }
 }

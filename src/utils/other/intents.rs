@@ -25,5 +25,5 @@ pub enum Intents {
     InstanceRoutes = 1 << 60,
     InstanceGuildChanges = 1 << 61,
     InstancePolicyUpdates = 1 << 62,
-    InstanceUserUpdates = 1 << 63
+    InstanceUserUpdates = 1 << 63,
 }

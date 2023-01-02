@@ -51,7 +51,10 @@ pub async fn migrate_directory(
         .await
         .map_err(|e| DbErr::Migration(e.to_string()))?
     {
-        let file_type = file.file_type().await.map_err(|e| DbErr::Migration(e.to_string()))?;
+        let file_type = file
+            .file_type()
+            .await
+            .map_err(|e| DbErr::Migration(e.to_string()))?;
         if file_type.is_dir() {
             continue;
         }
