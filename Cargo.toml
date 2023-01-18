@@ -43,7 +43,7 @@ rand = "0.8.5"
 flate2 = "1.0.25"
 
 [dependencies.tokio]
-version = "1.24.1"
+version = "1.24.2"
 features = ["full"]
 
 [dependencies.validator]
