@@ -67,5 +67,5 @@ version = "0.10.6"
 features = ["sqlx-mysql", "sqlx-postgres", "sqlx-sqlite", "runtime-tokio-rustls"]
 
 [dependencies.nix]
-version = "0.26.1"
+version = "0.26.2"
 features = ["user"]
