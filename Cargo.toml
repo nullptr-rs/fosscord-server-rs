@@ -63,7 +63,7 @@ version = "0.10.5"
 features = ["sqlx-mysql", "sqlx-postgres", "sqlx-sqlite", "runtime-tokio-rustls", "macros"]
 
 [dependencies.sea-orm-migration]
-version = "0.10.6"
+version = "0.10.7"
 features = ["sqlx-mysql", "sqlx-postgres", "sqlx-sqlite", "runtime-tokio-rustls"]
 
 [dependencies.nix]
