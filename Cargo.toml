@@ -15,7 +15,7 @@ env_logger = "0.10.0"
 log = "0.4.17"
 
 # Databases and data manipulation
-serde_json = "1.0.93"
+serde_json = "1.0.94"
 rust-s3 = "0.32.3"
 lapin = "2.1.1"
 
