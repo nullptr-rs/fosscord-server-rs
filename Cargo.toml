@@ -51,7 +51,7 @@ version = "0.16.0"
 features = ["derive"]
 
 [dependencies.serde]
-version = "1.0.151"
+version = "1.0.153"
 features = ["derive"]
 
 [dependencies.reqwest]
